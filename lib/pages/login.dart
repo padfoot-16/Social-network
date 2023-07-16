@@ -57,10 +57,9 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.hourglass_empty_rounded,
-                    size: 100,
-                  ),
+                  Container(
+                    height: 200,
+                    child: Image.asset("lib/assets/images/pulse.png")),
                   SizedBox(
                     height: 50,
                   ),
