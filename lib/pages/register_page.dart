@@ -21,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     showDialog(
      context: context,
-     builder: (context)=>Center(
+     builder: (context)=>const Center(
       child: CircularProgressIndicator(),
      ));
 
@@ -56,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: SingleChildScrollView(
-        physics: ClampingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         child: SafeArea(
           child: Center(
             child: Padding(
@@ -64,18 +64,18 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.hourglass_empty_rounded,
                     size: 100,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 50,
                   ),
                   Text(
                     "Let's create an account for you",
                     style: TextStyle(color: Colors.grey[700], fontSize: 16),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   MyTextfield(
@@ -83,7 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     hintText: "Username",
                     obscureText: false,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   MyTextfield(
@@ -91,14 +91,14 @@ class _RegisterPageState extends State<RegisterPage> {
                     hintText: "Password",
                     obscureText: true,
                   ),
-                  SizedBox(height: 25,),
+                  const SizedBox(height: 25,),
                   MyTextfield(
                     controller: confirmpasswordcontroller,
                     hintText: "Confirm Password",
                     obscureText: true,
                   ),
       
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   
@@ -107,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onTap: signup,
                     text: "Sign Up",
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
                   Row(
@@ -117,10 +117,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: TextStyle(
                         color: Colors.grey[700]
                       ),),
-                      SizedBox(width: 5,),
+                      const SizedBox(width: 5,),
                       GestureDetector(
                         onTap: widget.onTap,
-                        child: Text(
+                        child: const Text(
                           "Login now",
                           style: TextStyle(
                           color: Colors.blue,
@@ -135,6 +135,6 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
-    );;
+    );
   }
 }

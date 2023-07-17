@@ -53,8 +53,8 @@ class _WallPostState extends State<WallPost> {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(15)),
-      margin: EdgeInsets.only(top: 25, left: 25, right: 25),
-      padding: EdgeInsets.all(25),
+      margin: const EdgeInsets.only(top: 25, left: 25, right: 25),
+      padding:const  EdgeInsets.all(25),
       child: Row(
         children: [
           Column(
@@ -63,11 +63,11 @@ class _WallPostState extends State<WallPost> {
                 isLiked: isLiked,
                  onTap: toggleLike
                  ),
-                 SizedBox(height: 5,),
+                 const SizedBox(height: 5,),
                  Text(widget.likes.length.toString())
                  ],
           ),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
           Column(
@@ -77,7 +77,7 @@ class _WallPostState extends State<WallPost> {
                 widget.user,
                 style: TextStyle(color: Colors.grey[400]),
               ),
-              SizedBox(
+             const SizedBox(
                 height: 10,
               ),
               Text(widget.message),

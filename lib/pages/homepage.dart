@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:socialapp/components/drawer.dart';
 import 'package:socialapp/components/my_textfield.dart';
 import 'package:socialapp/components/wall_post.dart';
 
@@ -48,6 +49,7 @@ class _HomepageState extends State<Homepage> {
           )
         ],
       ),
+      drawer: MyDrawer(),
       body: Column(
         children: [
           Expanded(
