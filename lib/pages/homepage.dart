@@ -51,12 +51,6 @@ class _HomepageState extends State<Homepage> {
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
         title: const Text("Welcome To Pulse"),
-        actions: [
-          IconButton(
-            onPressed: signout,
-            icon: const Icon(Icons.logout),
-          )
-        ],
       ),
       drawer: MyDrawer(
         onprofiletap: gotoprofilepage,

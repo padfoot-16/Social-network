@@ -12,28 +12,36 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.grey[800],
+      backgroundColor: Colors.grey[850],
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          DrawerHeader(
-              child: Container(
-                  height: 200,
-                  child: Image.asset("lib/assets/images/pulse.png"))),
-          MyListTile(
-            icon: Icons.home,
-           text: 'HOME',
-           onTap: () {
-             Navigator.pop(context);
-           },
+          Column(
+            children: [
+              DrawerHeader(
+              child: SizedBox(
+                      height: 200,
+                      child: Image.asset("lib/assets/images/pulse.png",color: Colors.white,))),
+              MyListTile(
+                icon: Icons.home,
+               text: 'HOME',
+               onTap: () {
+                 Navigator.pop(context);
+               },
+               ),
+               MyListTile(
+                icon: Icons.person,
+                text: 'PROFILE',
+                onTap: onprofiletap,),
+            ],
+          ),
+           Padding(
+             padding: const EdgeInsets.only(bottom:25.0),
+             child: MyListTile(
+              icon: Icons.logout_outlined,
+              text: 'LOGOUT',
+              onTap: onsignout),
            ),
-           MyListTile(
-            icon: Icons.person,
-            text: 'PROFILE',
-            onTap: onprofiletap,),
-           MyListTile(
-            icon: Icons.logout_outlined,
-            text: 'LOGOUT',
-            onTap: onsignout),
            
         ],
       ),
