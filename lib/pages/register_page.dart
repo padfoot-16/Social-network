@@ -64,10 +64,9 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.hourglass_empty_rounded,
-                    size: 100,
-                  ),
+                   Container(
+                    height: 200,
+                    child: Image.asset("lib/assets/images/pulse.png")),
                   const SizedBox(
                     height: 50,
                   ),

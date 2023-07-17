@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:socialapp/components/drawer.dart';
 import 'package:socialapp/components/my_textfield.dart';
 import 'package:socialapp/components/wall_post.dart';
+import 'package:socialapp/pages/profilepage.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -20,17 +21,25 @@ class _HomepageState extends State<Homepage> {
     FirebaseAuth.instance.signOut();
   }
 
+  void gotoprofilepage() {
+    Navigator.pop(context);
+    Navigator.push(
+        context, MaterialPageRoute(
+          builder: (context) => ProfilePage()
+          )
+          );
+  }
+
   void postmessage() {
-    if ( textcontroller.text.isNotEmpty){
+    if (textcontroller.text.isNotEmpty) {
       FirebaseFirestore.instance.collection("User Posts").add({
-        'UserEmail':currentuser.email,
-        'Message':textcontroller.text,
-        "TimeStamp":Timestamp.now(),
-        "Likes":[],
+        'UserEmail': currentuser.email,
+        'Message': textcontroller.text,
+        "TimeStamp": Timestamp.now(),
+        "Likes": [],
       });
       setState(() {
-      textcontroller.clear();
-        
+        textcontroller.clear();
       });
     }
   }
@@ -49,7 +58,10 @@ class _HomepageState extends State<Homepage> {
           )
         ],
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(
+        onprofiletap: gotoprofilepage,
+        onsignout: signout,
+      ),
       body: Column(
         children: [
           Expanded(
