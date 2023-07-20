@@ -9,6 +9,7 @@ import 'package:socialapp/helper/helper_methods.dart';
 class WallPost extends StatefulWidget {
   final String message;
   final String user;
+  final String time;
   final String postid;
   final List<String> likes;
   const WallPost({
@@ -17,6 +18,7 @@ class WallPost extends StatefulWidget {
     required this.user,
     required this.postid,
     required this.likes,
+    required this.time,
   });
 
   @override
@@ -98,15 +100,29 @@ class _WallPostState extends State<WallPost> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(15)),
+          color: Colors.grey[100], borderRadius: BorderRadius.circular(15)),
       margin: const EdgeInsets.only(top: 25, left: 25, right: 25),
       padding: const EdgeInsets.all(25),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.user,
-            style: TextStyle(color: Colors.grey[400]),
+          Row(
+            children: [
+              Text(widget.user,
+              style: TextStyle(
+                color: Colors.grey[400]
+              ),
+              ),
+               Text(" . ",
+              style: TextStyle(
+                color: Colors.grey[400]
+              ),),
+              Text(widget.time,
+              style: TextStyle(
+                color: Colors.grey[400]
+              ),
+              ),
+            ],
           ),
           const SizedBox(
             height: 10,
@@ -137,7 +153,7 @@ class _WallPostState extends State<WallPost> {
                 children: [
                   CommentButton(onTap: showcommentdialog),
                   const SizedBox(
-                    height: 5,
+                    width: 50,
                   ),
                   const Text(
                     '0',
@@ -146,6 +162,9 @@ class _WallPostState extends State<WallPost> {
                 ],
               ),
             ],
+          ),
+          const SizedBox(
+            height: 20,
           ),
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
