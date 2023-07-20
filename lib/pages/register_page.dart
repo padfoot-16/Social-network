@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,7 @@ import '../components/mybutton.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
-  const RegisterPage({super.key,required this.onTap});
+  const RegisterPage({super.key, required this.onTap});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -17,38 +18,45 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordcontroller = TextEditingController();
   final confirmpasswordcontroller = TextEditingController();
 
-  void signup() async{
-
+  void signup() async {
     showDialog(
-     context: context,
-     builder: (context)=>const Center(
-      child: CircularProgressIndicator(),
-     ));
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
 
-     if(passwordcontroller.text != confirmpasswordcontroller.text){
+    if (passwordcontroller.text != confirmpasswordcontroller.text) {
       Navigator.pop(context);
       displaymessage("Passwords don't match");
       return;
-     }
+    }
 
-     try{
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: usernamecontroller.text,
-        password: passwordcontroller.text);
-        if(context.mounted) Navigator.pop(context);
-        
-     } on FirebaseAuthException catch(e){
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: usernamecontroller.text,
+              password: passwordcontroller.text);
+      FirebaseFirestore.instance
+          .collection("Users")
+          .doc(userCredential.user!.email)
+          .set({
+            'username': usernamecontroller.text.split('@')[0],
+            'bio':'Empty bio',
+            });
+
+      if (context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       displaymessage(e.code);
-     }
+    }
   }
 
-  void displaymessage(String message){
+  void displaymessage(String message) {
     showDialog(
-      context: context,
-     builder: (context)=>AlertDialog(
-      title: Text(message),
-     ));
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(message),
+            ));
   }
 
   @override
@@ -60,13 +68,13 @@ class _RegisterPageState extends State<RegisterPage> {
         child: SafeArea(
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal:25),
+              padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   Container(
-                    height: 200,
-                    child: Image.asset("lib/assets/images/pulse.png")),
+                  Container(
+                      height: 200,
+                      child: Image.asset("lib/assets/images/pulse.png")),
                   const SizedBox(
                     height: 50,
                   ),
@@ -90,18 +98,17 @@ class _RegisterPageState extends State<RegisterPage> {
                     hintText: "Password",
                     obscureText: true,
                   ),
-                  const SizedBox(height: 25,),
+                  const SizedBox(
+                    height: 25,
+                  ),
                   MyTextfield(
                     controller: confirmpasswordcontroller,
                     hintText: "Confirm Password",
                     obscureText: true,
                   ),
-      
                   const SizedBox(
                     height: 25,
                   ),
-                  
-                  
                   MyButton(
                     onTap: signup,
                     text: "Sign Up",
@@ -112,18 +119,19 @@ class _RegisterPageState extends State<RegisterPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Already have an account?",
-                      style: TextStyle(
-                        color: Colors.grey[700]
-                      ),),
-                      const SizedBox(width: 5,),
+                      Text(
+                        "Already have an account?",
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
                       GestureDetector(
                         onTap: widget.onTap,
                         child: const Text(
                           "Login now",
                           style: TextStyle(
-                          color: Colors.blue,
-                           fontWeight: FontWeight.bold),
+                              color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                       )
                     ],
