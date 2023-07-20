@@ -26,7 +26,7 @@ class Comment extends StatelessWidget {
           Row(
             children: [
               Text(user),
-              Text(" . ")
+              Text(" . "),
               Text(time),
             ],
           )

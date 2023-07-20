@@ -1,9 +1,10 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:socialapp/components/comment_button.dart';
+import 'package:socialapp/components/comments.dart';
 import 'package:socialapp/components/likebutton.dart';
+import 'package:socialapp/helper/helper_methods.dart';
 
 class WallPost extends StatefulWidget {
   final String message;
@@ -25,6 +26,7 @@ class WallPost extends StatefulWidget {
 class _WallPostState extends State<WallPost> {
   final currentUser = FirebaseAuth.instance.currentUser!;
   bool isLiked = false;
+  final _commenttextcontroller = TextEditingController();
 
   @override
   void initState() {
@@ -36,10 +38,11 @@ class _WallPostState extends State<WallPost> {
     setState(() {
       isLiked = !isLiked;
     });
-    DocumentReference postRef=FirebaseFirestore.instance.collection('User Posts').doc(widget.postid);
-    if (isLiked){
+    DocumentReference postRef =
+        FirebaseFirestore.instance.collection('User Posts').doc(widget.postid);
+    if (isLiked) {
       postRef.update({
-        'Likes':FieldValue.arrayUnion([currentUser.email])
+        'Likes': FieldValue.arrayUnion([currentUser.email])
       });
     } else {
       postRef.update({
@@ -48,42 +51,127 @@ class _WallPostState extends State<WallPost> {
     }
   }
 
+  void addcomment(String commenttext) {
+    FirebaseFirestore.instance
+        .collection("User Posts")
+        .doc(widget.postid)
+        .collection("comment")
+        .add({
+      "Comment": commenttext,
+      "CommentedBy": currentUser.email,
+      "CommentTime": Timestamp.now()
+    });
+  }
+
+  void showcommentdialog() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Add comment"),
+              content: TextField(
+                controller: _commenttextcontroller,
+                decoration: InputDecoration(
+                    hintText: "Write a Comment",
+                    hintStyle: TextStyle(color: Colors.grey[300])),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _commenttextcontroller.clear();
+                    },
+                    child: const Text("Cancel")),
+                TextButton(
+                    onPressed: () {
+                      if (_commenttextcontroller.text.isNotEmpty) {
+                        addcomment(_commenttextcontroller.text);
+                      }
+                      _commenttextcontroller.clear();
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Post")),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(15)),
       margin: const EdgeInsets.only(top: 25, left: 25, right: 25),
-      padding:const  EdgeInsets.all(25),
-      child: Row(
+      padding: const EdgeInsets.all(25),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              LikeButton(
-                isLiked: isLiked,
-                 onTap: toggleLike
-                 ),
-                 const SizedBox(height: 5,),
-                 Text(widget.likes.length.toString())
-                 ],
+          Text(
+            widget.user,
+            style: TextStyle(color: Colors.grey[400]),
           ),
           const SizedBox(
-            width: 20,
+            height: 10,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Text(widget.message),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                widget.user,
-                style: TextStyle(color: Colors.grey[400]),
+              Column(
+                children: [
+                  LikeButton(isLiked: isLiked, onTap: toggleLike),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    widget.likes.length.toString(),
+                    style: const TextStyle(color: Colors.grey),
+                  )
+                ],
               ),
-             const SizedBox(
-                height: 10,
+              const SizedBox(
+                width: 5,
               ),
-              Text(widget.message),
+              Column(
+                children: [
+                  CommentButton(onTap: showcommentdialog),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  const Text(
+                    '0',
+                    style: TextStyle(color: Colors.grey),
+                  )
+                ],
+              ),
             ],
-          )
+          ),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection("User Posts")
+                .doc(widget.postid)
+                .collection("comment")
+                .orderBy("CommentTime", descending: true).snapshots(),
+            builder:(context, snapshot) {
+              if(!snapshot.hasData){
+                return Center(child: CircularProgressIndicator(),);
+              }
+              return ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: snapshot.data!.docs.map((doc) {
+                  final commentData=doc.data() as Map<String,dynamic>;
+                  return Comment(
+                    text: commentData["Comment"],
+                   user: commentData["CommentedBy"],
+                    time: formatteddate(commentData["CommentTime"]) 
+                    );
+                }).toList(),
+              );
+            },)
         ],
+        
       ),
     );
   }
