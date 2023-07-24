@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:socialapp/components/comment_button.dart';
 import 'package:socialapp/components/comments.dart';
+import 'package:socialapp/components/delete_button.dart';
 import 'package:socialapp/components/likebutton.dart';
 import 'package:socialapp/helper/helper_methods.dart';
 
@@ -96,6 +97,47 @@ class _WallPostState extends State<WallPost> {
             ));
   }
 
+  void deletepost() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Delete post"),
+              content: Text("Are u sure you want to delete this post?"),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Cancel",style: TextStyle(color: Colors.black),)),
+                TextButton(
+                    onPressed: () async {
+                      final commentsdocs = await FirebaseFirestore.instance
+                          .collection("User Posts")
+                          .doc(widget.postid)
+                          .collection("comment")
+                          .get();
+                      for (var doc in commentsdocs.docs) {
+                        await FirebaseFirestore.instance
+                            .collection("User Posts")
+                            .doc(widget.postid)
+                            .collection("comment")
+                            .doc(doc.id)
+                            .delete();
+                      }
+
+                      FirebaseFirestore.instance
+                          .collection("User Posts")
+                          .doc(widget.postid)
+                          .delete()
+                          .then((value) => print("Post Deleted"))
+                          .catchError(
+                              (error) => print("failed to delete post: $error"));
+
+                              Navigator.pop(context);
+                    },
+                    child: Text("Delete",style: TextStyle(color: Colors.black))),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -107,21 +149,27 @@ class _WallPostState extends State<WallPost> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.user,
-              style: TextStyle(
-                color: Colors.grey[400]
+              Row(
+                children: [
+                  Text(
+                    widget.user,
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                  Text(
+                    " . ",
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                  Text(
+                    widget.time,
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                ],
               ),
-              ),
-               Text(" . ",
-              style: TextStyle(
-                color: Colors.grey[400]
-              ),),
-              Text(widget.time,
-              style: TextStyle(
-                color: Colors.grey[400]
-              ),
-              ),
+              if (widget.user == currentUser.email)
+                DeleteButton(onTap: deletepost)
             ],
           ),
           const SizedBox(
@@ -171,26 +219,28 @@ class _WallPostState extends State<WallPost> {
                 .collection("User Posts")
                 .doc(widget.postid)
                 .collection("comment")
-                .orderBy("CommentTime", descending: true).snapshots(),
-            builder:(context, snapshot) {
-              if(!snapshot.hasData){
-                return Center(child: CircularProgressIndicator(),);
+                .orderBy("CommentTime", descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               }
               return ListView(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 children: snapshot.data!.docs.map((doc) {
-                  final commentData=doc.data() as Map<String,dynamic>;
+                  final commentData = doc.data() as Map<String, dynamic>;
                   return Comment(
-                    text: commentData["Comment"],
-                   user: commentData["CommentedBy"],
-                    time: formatteddate(commentData["CommentTime"]) 
-                    );
+                      text: commentData["Comment"],
+                      user: commentData["CommentedBy"],
+                      time: formatteddate(commentData["CommentTime"]));
                 }).toList(),
               );
-            },)
+            },
+          )
         ],
-        
       ),
     );
   }

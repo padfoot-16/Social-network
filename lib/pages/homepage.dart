@@ -26,7 +26,7 @@ class _HomepageState extends State<Homepage> {
     Navigator.pop(context);
     Navigator.push(
         context, MaterialPageRoute(
-          builder: (context) => ProfilePage()
+          builder: (context) => const ProfilePage()
           )
           );
   }

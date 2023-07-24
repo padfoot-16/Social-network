@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class MyTextBox extends StatelessWidget {
   final String text;
   final String sectionname;
+
   final void Function()? onPressed;
   const MyTextBox({super.key,
   required this.text,
   required this.sectionname,
   required this.onPressed,
+  
   });
 
   @override
@@ -17,8 +19,8 @@ class MyTextBox extends StatelessWidget {
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(8)
       ),
-      padding: EdgeInsets.only(left: 15,bottom: 15),
-      margin: EdgeInsets.only(left: 20,right: 20,top: 20),
+      padding: const EdgeInsets.only(left: 15,bottom: 15),
+      margin: const EdgeInsets.only(left: 20,right: 20,top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,11 +31,32 @@ class MyTextBox extends StatelessWidget {
               style: TextStyle(color: Colors.grey[500]),),
               IconButton(
                 onPressed: onPressed,
-               icon: Icon(Icons.settings),color: Colors.grey[400],)
+               icon: const Icon(Icons.settings),color: Colors.grey[400],)
             ],
           ),
 
           Text(text),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.end,
+          //   children: [
+          //     Padding(
+          //       padding: const EdgeInsets.all(8.0),
+          //       child: Container(
+          //         padding: EdgeInsets.all(8),
+          //         color: enabled ? Colors.grey[500]:Colors.red[200],
+          //         child: Text("Cancel"),),
+          //     ),
+          //     Padding(
+          //       padding: const EdgeInsets.all(8.0),
+          //       child: Container(
+          //         padding: EdgeInsets.all(8),
+          //         color: enabled ? Colors.grey[500]:Colors.red[200],
+          //         child: Text("SAve"),),
+          //     ),
+          //   ],
+          // )
+
+          
         ],
       ),
     );

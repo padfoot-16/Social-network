@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:socialapp/components/editedbox.dart';
 import 'package:socialapp/components/textbox.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -12,48 +13,68 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final currentuser = FirebaseAuth.instance.currentUser!;
-  final userCollection=FirebaseFirestore.instance.collection('Users');
-
-  Future<void> editfield(String field) async {
+  final userCollection = FirebaseFirestore.instance.collection('Users');
+  final unamecontroller = TextEditingController();
+  final biocontroller = TextEditingController();
+  bool uenabled = false;
+  bool benabled = false;
+  void toggleedit(String field,bool enabl){
+  setState(() {
+      enabl = !enabl;
+    });
+  }
+  Future<void> editfield(String field, data) async {
+    
     String newvalue = "";
-    await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              backgroundColor: Colors.grey[900],
-              title: Text(
-                "Edit $field",
-                style: const TextStyle(color: Colors.white),
-              ),
-              content: TextField(
-                autofocus: true,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-                decoration: InputDecoration(
-                    hintText: "Enter New $field",
-                    hintStyle: const TextStyle(color: Colors.grey)),
-                onChanged: (value) {
-                  newvalue = value;
-                },
-              ),
-              actions: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      "Cancel",
-                      style: TextStyle(color: Colors.white),
-                    )),
-                TextButton(
-                    onPressed: () => Navigator.of(context).pop(newvalue),
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
-                    )),
-              ],
-            ));
-            if(newvalue.trim().length >0){
-              await userCollection.doc(currentuser.email).update({field:newvalue});
-            }
+    if (field == "username") {
+      setState(() {
+        unamecontroller.text = data;
+      });
+      newvalue = unamecontroller.text;
+    } else {
+      setState(() {
+        biocontroller.text = data;
+      });
+      newvalue = biocontroller.text;
+    }
+    // await showDialog(
+    //     context: context,
+    //     builder: (context) => AlertDialog(
+    //           backgroundColor: Colors.grey[900],
+    //           title: Text(
+    //             "Edit $field",
+    //             style: const TextStyle(color: Colors.white),
+    //           ),
+    //           content: TextField(
+    //             autofocus: true,
+    //             style: const TextStyle(
+    //               color: Colors.white,
+    //             ),
+    //             decoration: InputDecoration(
+    //                 hintText: "Enter New $field",
+    //                 hintStyle: const TextStyle(color: Colors.grey)),
+    //             onChanged: (value) {
+    //               newvalue = value;
+    //             },
+    //           ),
+    //           actions: [
+    //             TextButton(
+    //                 onPressed: () => Navigator.pop(context),
+    //                 child: const Text(
+    //                   "Cancel",
+    //                   style: TextStyle(color: Colors.white),
+    //                 )),
+    //             TextButton(
+    //                 onPressed: () => Navigator.of(context).pop(newvalue),
+    //                 child: const Text(
+    //                   "Save",
+    //                   style: TextStyle(color: Colors.white),
+    //                 )),
+    //           ],
+    //         ));
+    if (newvalue.trim().length > 0) {
+      await userCollection.doc(currentuser.email).update({field: newvalue});
+    }
   }
 
   @override
@@ -96,16 +117,31 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                     ),
-                    MyTextBox(
-                      text: userdata['username'],
-                      sectionname: 'username',
-                      onPressed: () => editfield('username'),
-                    ),
-                    MyTextBox(
-                      text: userdata['bio'],
-                      sectionname: 'bio',
-                      onPressed: () => editfield('bio'),
-                    ),
+                    // utext=Text(unamecontroller.text),
+                    // unamecontroller.text = userdata["username"],
+                    // biocontroller.text = userdata["bio"],
+                    uenabled == false
+                        ? MyTextBox(
+                            text: userdata['username'],
+                            sectionname: 'username',
+                            onPressed: () =>
+                                toggleedit('username', uenabled),
+                          )
+                        : EditedBox(
+                            sectionname: 'username',
+                            fieldcontroller: unamecontroller,
+                            ontap: () =>
+                                editfield('username', userdata["username"])),
+                    benabled == false
+                        ? MyTextBox(
+                            text: userdata['bio'],
+                            sectionname: 'bio',
+                            onPressed: () => toggleedit('bio', benabled),
+                          )
+                        : EditedBox(
+                            sectionname: "Bio",
+                            fieldcontroller: biocontroller,
+                            ontap: () => editfield('bio', userdata["bio"])),
                     const SizedBox(
                       height: 20,
                     ),
