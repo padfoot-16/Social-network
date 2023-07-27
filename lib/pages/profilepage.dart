@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:socialapp/components/editedbox.dart';
 import 'package:socialapp/components/textbox.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -18,62 +17,28 @@ class _ProfilePageState extends State<ProfilePage> {
   final biocontroller = TextEditingController();
   bool uenabled = false;
   bool benabled = false;
-  void toggleedit(String field,bool enabl){
-  setState(() {
-      enabl = !enabl;
+  bool enabled = false;
+  String uval = "";
+  String bval = "";
+  Future<void> toggleedit() async {
+    setState(() {
+      enabled = !enabled;
     });
   }
-  Future<void> editfield(String field, data) async {
-    
-    String newvalue = "";
-    if (field == "username") {
-      setState(() {
-        unamecontroller.text = data;
-      });
-      newvalue = unamecontroller.text;
-    } else {
-      setState(() {
-        biocontroller.text = data;
-      });
-      newvalue = biocontroller.text;
+
+  Future<void> editfield(
+    String field,
+    data,
+  ) async {
+    setState(() {
+      enabled = !enabled;
+    });
+
+    if (uval.trim().isNotEmpty) {
+      await userCollection.doc(currentuser.email).update({"username": uval});
     }
-    // await showDialog(
-    //     context: context,
-    //     builder: (context) => AlertDialog(
-    //           backgroundColor: Colors.grey[900],
-    //           title: Text(
-    //             "Edit $field",
-    //             style: const TextStyle(color: Colors.white),
-    //           ),
-    //           content: TextField(
-    //             autofocus: true,
-    //             style: const TextStyle(
-    //               color: Colors.white,
-    //             ),
-    //             decoration: InputDecoration(
-    //                 hintText: "Enter New $field",
-    //                 hintStyle: const TextStyle(color: Colors.grey)),
-    //             onChanged: (value) {
-    //               newvalue = value;
-    //             },
-    //           ),
-    //           actions: [
-    //             TextButton(
-    //                 onPressed: () => Navigator.pop(context),
-    //                 child: const Text(
-    //                   "Cancel",
-    //                   style: TextStyle(color: Colors.white),
-    //                 )),
-    //             TextButton(
-    //                 onPressed: () => Navigator.of(context).pop(newvalue),
-    //                 child: const Text(
-    //                   "Save",
-    //                   style: TextStyle(color: Colors.white),
-    //                 )),
-    //           ],
-    //         ));
-    if (newvalue.trim().length > 0) {
-      await userCollection.doc(currentuser.email).update({field: newvalue});
+    if (bval.isNotEmpty) {
+      await userCollection.doc(currentuser.email).update({"bio": bval});
     }
   }
 
@@ -110,48 +75,151 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(
                       height: 50,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25.0),
-                      child: Text(
-                        "My Details",
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 25.0),
+                          child: Text(
+                            "My Details",
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: toggleedit,
+                          icon: const Icon(Icons.settings),
+                          color: Colors.grey[400],
+                        )
+                      ],
                     ),
-                    // utext=Text(unamecontroller.text),
-                    // unamecontroller.text = userdata["username"],
+                    // // utext=Text(unamecontroller.text),
+                    // unamecontroller.text =userdata["username"],
                     // biocontroller.text = userdata["bio"],
-                    uenabled == false
+                    enabled == false
                         ? MyTextBox(
                             text: userdata['username'],
-                            sectionname: 'username',
+                            sectionname: 'Username',
                             onPressed: () =>
-                                toggleedit('username', uenabled),
-                          )
-                        : EditedBox(
-                            sectionname: 'username',
-                            fieldcontroller: unamecontroller,
-                            ontap: () =>
-                                editfield('username', userdata["username"])),
-                    benabled == false
+                                editfield('username', userdata["username"]))
+                        : Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8)),
+                            padding:
+                                const EdgeInsets.only(left: 15, bottom: 15),
+                            margin: const EdgeInsets.only(
+                                left: 20, right: 20, top: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Username",
+                                      style: TextStyle(color: Colors.grey[500]),
+                                    ),
+                                  ],
+                                ),
+                                TextField(
+                                  controller: unamecontroller,
+                                  cursorColor: Colors.grey[900],
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.grey.shade500)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.grey.shade400)),
+                                  ),
+                                  onChanged: (value) {
+                                    uval = value;
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                    enabled == false
                         ? MyTextBox(
                             text: userdata['bio'],
-                            sectionname: 'bio',
-                            onPressed: () => toggleedit('bio', benabled),
+                            sectionname: 'Bio',
+                            onPressed: () =>
+                                editfield('username', userdata["username"]),
                           )
-                        : EditedBox(
-                            sectionname: "Bio",
-                            fieldcontroller: biocontroller,
-                            ontap: () => editfield('bio', userdata["bio"])),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 25.0),
-                      child: Text(
-                        "My Posts",
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                    ),
+                        : Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8)),
+                            padding:
+                                const EdgeInsets.only(left: 15, bottom: 15),
+                            margin: const EdgeInsets.only(
+                                left: 20, right: 20, top: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Bio",
+                                      style: TextStyle(color: Colors.grey[500]),
+                                    ),
+                                  ],
+                                ),
+                                TextField(
+                                  controller: biocontroller,
+                                  cursorColor: Colors.grey[900],
+                                  decoration: InputDecoration(
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.grey.shade500),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.grey.shade400)),
+                                  ),
+                                  onChanged: (value) {
+                                    bval = value;
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                    enabled == true
+                        ? Padding(
+                          padding: const EdgeInsets.only(right:18.0,top: 10),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                    onPressed: toggleedit,
+                                    style: ButtonStyle(
+                                        backgroundColor: MaterialStatePropertyAll(
+                                            Colors.grey[800])),
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(color: Colors.white),
+                                    )),
+                                    SizedBox(width: 10,),
+                                TextButton(
+                                    onPressed: () => editfield(
+                                        'username', userdata["username"]),
+                                    style: ButtonStyle(
+                                        backgroundColor: MaterialStatePropertyAll(
+                                            Colors.grey[800])),
+                                    child: Text(
+                                      "Save",
+                                      style: TextStyle(color: Colors.white),
+                                    ))
+                              ],
+                            ),
+                        )
+                        : SizedBox(),
                   ],
                 );
               } else if (snapshot.hasError) {

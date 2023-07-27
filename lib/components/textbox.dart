@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MyTextBox extends StatelessWidget {
   final String text;
   final String sectionname;
-
+  
   final void Function()? onPressed;
   const MyTextBox({super.key,
   required this.text,
@@ -15,6 +15,7 @@ class MyTextBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 100,
       decoration: BoxDecoration(
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(8)
@@ -23,40 +24,12 @@ class MyTextBox extends StatelessWidget {
       margin: const EdgeInsets.only(left: 20,right: 20,top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(sectionname,
-              style: TextStyle(color: Colors.grey[500]),),
-              IconButton(
-                onPressed: onPressed,
-               icon: const Icon(Icons.settings),color: Colors.grey[400],)
-            ],
-          ),
+          Text(sectionname,
+          style: TextStyle(color: Colors.grey[500]),),
 
           Text(text),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.end,
-          //   children: [
-          //     Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Container(
-          //         padding: EdgeInsets.all(8),
-          //         color: enabled ? Colors.grey[500]:Colors.red[200],
-          //         child: Text("Cancel"),),
-          //     ),
-          //     Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Container(
-          //         padding: EdgeInsets.all(8),
-          //         color: enabled ? Colors.grey[500]:Colors.red[200],
-          //         child: Text("SAve"),),
-          //     ),
-          //   ],
-          // )
-
-          
         ],
       ),
     );
